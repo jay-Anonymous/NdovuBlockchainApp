@@ -38,6 +38,7 @@
 #include <libsolidity/interface/DebugSettings.h>
 #include <libsolidity/interface/ImportRemapper.h>
 #include <libsolidity/interface/StorageLayout.h>
+#include <libsolidity/interface/FileAndSMTCallbacks.h>
 #include <libsolidity/lsp/LanguageServer.h>
 #include <libsolidity/lsp/Transport.h>
 
@@ -681,7 +682,14 @@ void CommandLineInterface::compile()
 {
 	solAssert(m_options.input.mode == InputMode::Compiler || m_options.input.mode == InputMode::CompilerWithASTImport, "");
 
-	m_compiler = make_unique<CompilerStack>(m_fileReader.reader());
+	auto modelChecker = m_options.modelChecker.settings;
+	if (modelChecker.solvers.eld)
+	{
+		auto smtCLI = SMTSolverCLI("eld");
+		m_compiler = make_unique<CompilerStack>(FileAndSMTCallbacks(m_fileReader, smtCLI).fileAndSMTCallbacks());
+	}
+	else
+		m_compiler = make_unique<CompilerStack>(m_fileReader.reader());
 
 	SourceReferenceFormatter formatter(serr(false), *m_compiler, coloredOutput(m_options), m_options.formatting.withErrorIds);
 

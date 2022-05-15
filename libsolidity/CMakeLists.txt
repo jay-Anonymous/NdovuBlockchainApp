@@ -139,6 +139,7 @@ set(sources
 	interface/CompilerStack.cpp
 	interface/CompilerStack.h
 	interface/DebugSettings.h
+	interface/FileAndSMTCallbacks.h
 	interface/FileReader.cpp
 	interface/FileReader.h
 	interface/ImportRemapper.cpp
@@ -149,6 +150,8 @@ set(sources
 	interface/Natspec.h
 	interface/OptimiserSettings.h
 	interface/ReadFile.h
+	interface/SMTSolverCLI.cpp
+	interface/SMTSolverCLI.h
 	interface/StandardCompiler.cpp
 	interface/StandardCompiler.h
 	interface/StorageLayout.cpp
