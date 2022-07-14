@@ -434,7 +434,7 @@ bool CompilerStack::analyze()
 
 	try
 	{
-		SyntaxChecker syntaxChecker(m_errorReporter, m_optimiserSettings.runYulOptimiser);
+		SyntaxChecker syntaxChecker(m_errorReporter, m_optimiserSettings.runYulOptimiser, m_evmVersion);
 		for (Source const* source: m_sourceOrder)
 			if (source->ast && !syntaxChecker.checkSyntax(*source->ast))
 				noErrors = false;
