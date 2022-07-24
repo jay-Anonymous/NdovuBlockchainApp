@@ -4,6 +4,8 @@ Language Features:
 
 
 Compiler Features:
+* Commandline Interface: Add `--no-cbor-metadata` that skips CBOR metadata from getting appended at the end of the deployed bytecode.
+* Standard JSON: Add a boolean field `settings.metadata.appendCBOR` that skips CBOR metadata from getting appended at the end of the deployed bytecode.
 * Yul Optimizer: Allow replacing the previously hard-coded cleanup sequence by specifying custom steps after a colon delimiter (``:``) in the sequence string.
 
 
@@ -42,8 +44,9 @@ Compiler Features:
  * Code Generator: More efficient code for checked addition and subtraction.
  * TypeChecker: Support using library constants in initializers of other constants.
  * Yul IR Code Generation: Improved copy routines for arrays with packed storage layout.
- * Yul Optimizer: Add rule to convert ``mod(add(X, Y), A)`` into ``addmod(X, Y, A)``, if ``A`` is a power of two.
- * Yul Optimizer: Add rule to convert ``mod(mul(X, Y), A)`` into ``mulmod(X, Y, A)``, if ``A`` is a power of two.
+ * Yul Optimizer: Add rule to convert `mod(mul(X, Y), A)` into `mulmod(X, Y, A)`, if `A` is a power of two.
+ * Yul Optimizer: Add rule to convert `mod(add(X, Y), A)` into `addmod(X, Y, A)`, if `A` is a power of two.
+ * Code Generator: More efficient code for checked addition and subtraction.
 
 
 Bugfixes:
