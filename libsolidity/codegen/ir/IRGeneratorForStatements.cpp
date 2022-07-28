@@ -679,7 +679,7 @@ bool IRGeneratorForStatements::visit(UnaryOperation const& _unaryOperation)
 		setLocation(_unaryOperation);
 
 		solAssert(
-			dynamic_cast<SourceUnit const*>(function->scope()),
+			function->isFree() || function->libraryFunction(),
 			"Only file-level functions and library functions can be bound to a user type operator."
 		);
 
