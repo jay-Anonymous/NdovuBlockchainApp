@@ -6,10 +6,11 @@
 Using For
 *********
 
-The directive ``using A for B;`` can be used to attach
-functions (``A``) as member functions to any type (``B``).
-These functions will receive the object they are called on
-as their first parameter (like the ``self`` variable in Python).
+The directive ``using A for B;`` can be used to attach functions (``A``)
+as operators to user-defined type or as member functions to any type (``B``).
+The member functions receive the object they are called on as their first
+parameter (like the ``self`` variable in Python). The operator functions
+receives operands as parameters.
 
 It is valid either at file level or inside a contract,
 at contract level.
@@ -17,14 +18,16 @@ at contract level.
 The first part, ``A``, can be one of:
 
 - a list of file-level or library functions (``using {f, g, h, L.t} for uint;``) -
-  only those functions will be attached to the type.
+  only those functions will be attached to the type as member functions,
 - the name of a library (``using L for uint;``) -
   all functions (both public and internal ones) of the library are attached to the type
+  as member functions,
+- a list of assignments of functions to operators (``using {f as +, g as -} for T;``) -
+  the functions will be attached to the type (``T``) as operators.
 
 At file level, the second part, ``B``, has to be an explicit type (without data location specifier).
-Inside contracts, you can also use ``using L for *;``,
-which has the effect that all functions of the library ``L``
-are attached to *all* types.
+To attach functions as member functions inside contracts, you can also use ``using L for *;``, which
+has the effect that all functions of the library ``L`` are attached to *all* types.
 
 If you specify a library, *all* functions in the library are attached,
 even those where the type of the first parameter does not
@@ -36,6 +39,12 @@ If you use a list of functions (``using {f, g, h, L.t} for uint;``),
 then the type (``uint``) has to be implicitly convertible to the
 first parameter of each of these functions. This check is
 performed even if none of these functions are called.
+
+If you define a user type operator (``using {f as +} for T``), then
+the type (``T``), types of function parameters and a type of function return value
+has to be the same. The type (``T``) does not include data location.
+But, data location of the function parameters and function return value must be
+the same.
 
 The ``using A for B;`` directive is active only within the current
 scope (either the contract or the current module/source unit),
@@ -149,3 +158,33 @@ if you pass memory or value types, a copy will be performed, even in case of the
 ``self`` variable. The only situation where no copy will be performed
 is when storage reference variables are used or when internal library
 functions are called.
+
+Another example shows how to define user type operator:
+
+.. code-block:: solidity
+
+    // SPDX-License-Identifier: GPL-3.0
+    pragma solidity >=0.8.16 <0.9.0;
+
+    using {add as +} for Point;
+
+    struct Point {
+        uint x;
+        uint y;
+    }
+
+    function add(Point memory _a, Point memory _b) pure returns (Point memory result) {
+        result.x = _a.x + _b.x;
+        result.y = _a.y + _b.y;
+    }
+
+    contract C {
+        function test() pure public {
+            Point memory p1 = Point({x:3, y:4});
+            Point memory p2 = Point({x:7, y:16});
+
+            Point memory result = p1 + p2;
+            require(result.x == 10);
+            require(result.y == 20);
+        }
+    }
