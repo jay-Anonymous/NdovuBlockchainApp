@@ -4,8 +4,9 @@
 Cleaning Up Variables
 *********************
 
-When a value is shorter than 256 bit, in some cases the remaining bits
-must be cleaned.
+Ultimately, all values in the EVM are stored in 256 bit words.
+Thus, when the type of a value has less than 256 bits,
+in some cases the remaining bits must be cleaned.
 The Solidity compiler is designed to clean such remaining bits before any operations
 that might be adversely affected by the potential garbage in the remaining bits.
 For example, before writing a value to  memory, the remaining bits need
@@ -28,25 +29,27 @@ the boolean values before they are used as the condition for
 In addition to the design principle above, the Solidity compiler
 cleans input data when it is loaded onto the stack.
 
-Different types have different rules for cleaning up invalid values:
+The following table describes the rules applied for valid and invalid values of different types,
+where ``higher bits`` refers to the remaining bits in case the type has less than 256 bits.
 
-+---------------+---------------+-------------------+
-|Type           |Valid Values   |Invalid Values Mean|
-+===============+===============+===================+
-|enum of n      |0 until n - 1  |exception          |
-|members        |               |                   |
-+---------------+---------------+-------------------+
-|bool           |0 or 1         |1                  |
-+---------------+---------------+-------------------+
-|signed integers|sign-extended  |currently silently |
-|               |word           |wraps; in the      |
-|               |               |future exceptions  |
-|               |               |will be thrown     |
-|               |               |                   |
-|               |               |                   |
-+---------------+---------------+-------------------+
-|unsigned       |higher bits    |currently silently |
-|integers       |zeroed         |wraps; in the      |
-|               |               |future exceptions  |
-|               |               |will be thrown     |
-+---------------+---------------+-------------------+
++---------------+---------------+-------------------------+
+|Type           |Valid Values   |Cleanup of Invalid Values|
++===============+===============+=========================+
+|enum of n      |0 until n - 1  |throws exception         |
+|members        |               |                         |
++---------------+---------------+-------------------------+
+|bool           |0 or 1         |results in 1             |
++---------------+---------------+-------------------------+
+|signed integers|higher bits    |currently silently       |
+|               |set to the     |signextends to a valid   |
+|               |sign bit       |value, i.e. all higher   |
+|               |               |bits are set to the sign |
+|               |               |bit; may throw an        |
+|               |               |exception in the future  |
++---------------+---------------+-------------------------+
+|unsigned       |higher bits    |currently silently masks |
+|integers       |zeroed         |to a valid value, i.e.   |
+|               |               |all higher bits are set  |
+|               |               |to zero; may throw an    |
+|               |               |exception in the future  |
++---------------+---------------+-------------------------+
