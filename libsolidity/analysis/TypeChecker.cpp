@@ -44,6 +44,7 @@
 #include <range/v3/view/drop_exactly.hpp>
 #include <range/v3/view/enumerate.hpp>
 #include <range/v3/view/zip.hpp>
+#include <range/v3/all.hpp>
 
 #include <memory>
 #include <vector>
@@ -3863,6 +3864,25 @@ void TypeChecker::endVisit(Literal const& _literal)
 					"Literal suffix functions must return exactly one value."
 				);
 			}
+
+			for (Type const* returnType: suffixFunctionType->returnParameterTypes())
+			{
+				auto referenceType = dynamic_cast<ReferenceType const*>(returnType);
+				auto mappingType = dynamic_cast<MappingType const*>(returnType);
+				if (
+					mappingType ||
+					(referenceType && !referenceType->dataStoredIn(DataLocation::Memory))
+				  )
+				{
+					m_errorReporter.typeError(
+						7251_error,
+						_literal.location(),
+						"Literal suffix functions must return memory value."
+					);
+					break;
+				}
+			}
+
 			isCompileTimeConstant = suffixFunctionType->isPure();
 		}
 	}
