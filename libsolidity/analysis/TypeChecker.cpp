@@ -44,7 +44,7 @@
 #include <range/v3/view/drop_exactly.hpp>
 #include <range/v3/view/enumerate.hpp>
 #include <range/v3/view/zip.hpp>
-#include <range/v3/all.hpp>
+#include <range/v3/algorithm/any_of.hpp>
 
 #include <memory>
 #include <vector>
@@ -3865,23 +3865,23 @@ void TypeChecker::endVisit(Literal const& _literal)
 				);
 			}
 
-			for (Type const* returnType: suffixFunctionType->returnParameterTypes())
-			{
-				auto referenceType = dynamic_cast<ReferenceType const*>(returnType);
-				auto mappingType = dynamic_cast<MappingType const*>(returnType);
-				if (
-					mappingType ||
-					(referenceType && !referenceType->dataStoredIn(DataLocation::Memory))
-				  )
-				{
-					m_errorReporter.typeError(
-						7251_error,
-						_literal.location(),
-						"Literal suffix functions must return memory value."
-					);
-					break;
-				}
-			}
+			if (ranges::any_of(
+					suffixFunctionType->returnParameterTypes(),
+					[](Type const* returnType) {
+						auto referenceType = dynamic_cast<ReferenceType const*>(returnType);
+						auto mappingType = dynamic_cast<MappingType const*>(returnType);
+						return
+							mappingType ||
+							(referenceType && !referenceType->dataStoredIn(DataLocation::Memory))
+						;
+					}
+				)
+			)
+				m_errorReporter.typeError(
+					7251_error,
+					_literal.location(),
+					"Literal suffix functions must return memory value."
+				);
 
 			isCompileTimeConstant = suffixFunctionType->isPure();
 		}
