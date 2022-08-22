@@ -74,7 +74,6 @@ private:
 	bool visit(MemberAccess const& _memberAccess) override;
 	bool visit(ModifierInvocation const& _modifierInvocation) override;
 	bool visit(NewExpression const& _newExpression) override;
-	bool visit(Literal const& _literal) override;
 
 	void enqueueCallable(CallableDeclaration const& _callable);
 	void processQueue();

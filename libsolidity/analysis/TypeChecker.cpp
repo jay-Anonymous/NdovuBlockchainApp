@@ -3754,10 +3754,12 @@ bool TypeChecker::visit(Literal const& _literal)
 		[&](ASTPointer<Identifier> const& _identifier) {
 			_identifier->annotation().suffixedLiteral = &_literal;
 			_identifier->annotation().arguments = {{literalType}, {}};
+			_identifier->annotation().calledDirectly = true;
 		},
 		[&](ASTPointer<MemberAccess> const& _memberAccess) {
 			_memberAccess->annotation().suffixedLiteral = &_literal;
 			_memberAccess->annotation().arguments = {{literalType}, {}};
+			_memberAccess->annotation().calledDirectly = true;
 		},
 		[&](Literal::SubDenomination) {},
 	}, _literal.suffix());
