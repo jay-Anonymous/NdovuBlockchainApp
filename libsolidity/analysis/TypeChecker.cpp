@@ -3830,6 +3830,7 @@ void TypeChecker::endVisit(Literal const& _literal)
 				parameterCountMessage = "Functions that take 2 arguments can only be used as literal suffixes for rational numbers.";
 
 			optional<string> parameterTypeMessage;
+			optional<string> exponentTypeMessage;
 			if (parameterCountMessage.has_value())
 				m_errorReporter.typeError(9128_error, _literal.location(), parameterCountMessage.value());
 			else if (suffixFunctionType->parameterTypes().size() == 2)
@@ -3846,12 +3847,22 @@ void TypeChecker::endVisit(Literal const& _literal)
 				)
 					// TODO: Is this triggered when the argument is out of range? Test.
 					parameterTypeMessage = "The type of the literal cannot be converted to the parameters of the suffix function.";
+
+				if (
+					auto expParam = dynamic_cast<IntegerType const*>(suffixFunctionType->parameterTypes().at(1));
+					expParam && expParam->isSigned()
+				)
+					exponentTypeMessage = "The type of the exponent must be unsigned for decimal literal suffix functions.";
+
 			}
 			else if (!literalType->isImplicitlyConvertibleTo(*suffixFunctionType->parameterTypes().front()))
 				parameterTypeMessage = "The type of the literal cannot be converted to the parameter of the suffix function.";
 
 			if (parameterTypeMessage.has_value())
 				m_errorReporter.typeError(8838_error, _literal.location(), parameterTypeMessage.value());
+
+			if (exponentTypeMessage.has_value())
+				m_errorReporter.typeError(3123_error, _literal.location(), exponentTypeMessage.value());
 
 			if (suffixFunctionType->returnParameterTypes().size() == 1)
 				_literal.annotation().type = suffixFunctionType->returnParameterTypes().front();
