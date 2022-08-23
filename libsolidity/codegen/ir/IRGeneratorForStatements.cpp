@@ -47,7 +47,10 @@
 #include <libsolutil/FunctionSelector.h>
 #include <libsolutil/Visitor.h>
 
+#include <range/v3/view/indirect.hpp>
+#include <range/v3/view/addressof.hpp>
 #include <range/v3/view/transform.hpp>
+#include <range/v3/range/conversion.hpp>
 
 using namespace std;
 using namespace solidity;
@@ -949,7 +952,11 @@ void IRGeneratorForStatements::endVisit(FunctionCall const& _functionCall)
 		break;
 	case FunctionType::Kind::Internal:
 		solAssert(functionType);
-		appendInternalFunctionCall(_functionCall, *functionType, arguments);
+		appendInternalFunctionCall(
+			_functionCall,
+			*functionType,
+			arguments | ranges::views::indirect | ranges::views::addressof | ranges::to<vector>
+		);
 		break;
 	case FunctionType::Kind::External:
 	case FunctionType::Kind::DelegateCall:
@@ -2525,7 +2532,7 @@ void IRGeneratorForStatements::handleVariableReference(
 void IRGeneratorForStatements::appendInternalFunctionCall(
 	FunctionCall const& _functionCall,
 	FunctionType const& _functionType,
-	vector<ASTPointer<Expression const>> const& _arguments
+	vector<Expression const*> const& _arguments
 )
 {
 	solAssert(!_functionType.takesArbitraryParameters());
@@ -2544,7 +2551,10 @@ void IRGeneratorForStatements::appendInternalFunctionCall(
 	if (functionDefinition)
 	{
 		solAssert(functionDefinition->isImplemented());
-		solAssert(&_functionType == functionDefinition->functionType(true /* _internal */));
+		if (_functionType.bound())
+			solAssert(_functionType == *functionDefinition->functionType(true /* _internal */)->asBoundFunction());
+		else
+			solAssert(_functionType == *functionDefinition->functionType(true /* _internal */));
 
 		define(_functionCall) <<
 			m_context.enqueueFunctionForCodeGeneration(*functionDefinition) <<
@@ -2554,6 +2564,8 @@ void IRGeneratorForStatements::appendInternalFunctionCall(
 	}
 	else
 	{
+		solAssert(identifierOrMemberAccess);
+
 		YulArity arity = YulArity::fromType(_functionType);
 		m_context.internalFunctionCalledThroughDispatch(arity);
 

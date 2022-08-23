@@ -157,7 +157,7 @@ private:
 	void appendInternalFunctionCall(
 		FunctionCall const& _functionCall,
 		FunctionType const& _functionType,
-		std::vector<ASTPointer<Expression const>> const& _arguments
+		std::vector<Expression const *> const& _arguments
 	);
 	/// Appends code to call an external function with the given arguments.
 	/// All involved expressions have already been visited.
