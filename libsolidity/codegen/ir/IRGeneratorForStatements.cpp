@@ -2429,6 +2429,9 @@ bool IRGeneratorForStatements::visit(Literal const& _literal)
 	if (_literal.suffixFunction())
 	{
 		FunctionType const& suffixFunctionType = *_literal.suffixFunction()->functionType(true /* _internal */);
+		solAssert(!suffixFunctionType.bound());
+		solAssert(!suffixFunctionType.takesArbitraryParameters());
+		solAssert(_literal.suffixFunction()->isImplemented());
 
 		// NOTE: This is the type of the literal itself, ignoring the suffix.
 		auto const* literalRationalType = dynamic_cast<RationalNumberType const*>(&literalType);
