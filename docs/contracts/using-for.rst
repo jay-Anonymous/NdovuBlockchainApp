@@ -164,7 +164,7 @@ Another example shows how to define user type operator:
 .. code-block:: solidity
 
     // SPDX-License-Identifier: GPL-3.0
-    pragma solidity >=0.8.16 <0.9.0;
+    pragma solidity >=0.8.17 <0.9.0;
 
     using {add as +} for Point;
 
