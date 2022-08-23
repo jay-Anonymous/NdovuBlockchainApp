@@ -2482,7 +2482,10 @@ bool IRGeneratorForStatements::visit(Literal const& _literal)
 			define(_literal) << toCompactHexWithPrefix(expressionType.literalValue(&_literal)) << "\n";
 			break;
 		case Type::Category::StringLiteral:
-			break; // will be done during conversion
+			// A string literal cannot be simply assigned to a Yul variable so we don't create one here.
+			// Instead any expression that uses it has to generate custom conversion code that
+			// depends on where the string ultimately ends up (storage, memory, ABI encoded data, etc.).
+			break;
 		default:
 			solUnimplemented("Only integer, boolean and string literals implemented for now.");
 		}
