@@ -948,42 +948,9 @@ void IRGeneratorForStatements::endVisit(FunctionCall const& _functionCall)
 		solAssert(false, "Attempted to generate code for calling a function definition.");
 		break;
 	case FunctionType::Kind::Internal:
-	{
-		FunctionDefinition const* functionDef = ASTNode::resolveFunctionCall(_functionCall, &m_context.mostDerivedContract());
-
-		solAssert(!functionType->takesArbitraryParameters());
-
-		vector<string> args;
-		if (functionType->bound())
-			args += IRVariable(_functionCall.expression()).part("self").stackSlots();
-
-		for (size_t i = 0; i < arguments.size(); ++i)
-			args += convert(*arguments[i], *parameterTypes[i]).stackSlots();
-
-		if (functionDef)
-		{
-			solAssert(functionDef->isImplemented());
-
-			define(_functionCall) <<
-				m_context.enqueueFunctionForCodeGeneration(*functionDef) <<
-				"(" <<
-				joinHumanReadable(args) <<
-				")\n";
-		}
-		else
-		{
-			YulArity arity = YulArity::fromType(*functionType);
-			m_context.internalFunctionCalledThroughDispatch(arity);
-
-			define(_functionCall) <<
-				IRNames::internalDispatch(arity) <<
-				"(" <<
-				IRVariable(_functionCall.expression()).part("functionIdentifier").name() <<
-				joinHumanReadablePrefixed(args) <<
-				")\n";
-		}
+		solAssert(functionType);
+		appendInternalFunctionCall(_functionCall, *functionType, arguments);
 		break;
-	}
 	case FunctionType::Kind::External:
 	case FunctionType::Kind::DelegateCall:
 		appendExternalFunctionCall(_functionCall, arguments);
@@ -2547,6 +2514,48 @@ void IRGeneratorForStatements::handleVariableReference(
 		});
 	else
 		solAssert(false, "Invalid variable kind.");
+}
+
+void IRGeneratorForStatements::appendInternalFunctionCall(
+	FunctionCall const& _functionCall,
+	FunctionType const& _functionType,
+	vector<ASTPointer<Expression const>> const& _arguments
+)
+{
+	FunctionDefinition const* functionDef = ASTNode::resolveFunctionCall(_functionCall, &m_context.mostDerivedContract());
+
+	solAssert(!_functionType.takesArbitraryParameters());
+
+	vector<string> args;
+	if (_functionType.bound())
+		args += IRVariable(_functionCall.expression()).part("self").stackSlots();
+
+	TypePointers parameterTypes = _functionType.parameterTypes();
+	for (size_t i = 0; i < _arguments.size(); ++i)
+		args += convert(*_arguments[i], *parameterTypes[i]).stackSlots();
+
+	if (functionDef)
+	{
+		solAssert(functionDef->isImplemented());
+
+		define(_functionCall) <<
+			m_context.enqueueFunctionForCodeGeneration(*functionDef) <<
+			"(" <<
+			joinHumanReadable(args) <<
+			")\n";
+	}
+	else
+	{
+		YulArity arity = YulArity::fromType(_functionType);
+		m_context.internalFunctionCalledThroughDispatch(arity);
+
+		define(_functionCall) <<
+			IRNames::internalDispatch(arity) <<
+			"(" <<
+			IRVariable(_functionCall.expression()).part("functionIdentifier").name() <<
+			joinHumanReadablePrefixed(args) <<
+			")\n";
+	}
 }
 
 void IRGeneratorForStatements::appendExternalFunctionCall(
