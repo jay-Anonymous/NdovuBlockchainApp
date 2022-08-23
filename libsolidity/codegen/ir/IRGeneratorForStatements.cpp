@@ -2525,26 +2525,28 @@ void IRGeneratorForStatements::appendInternalFunctionCall(
 	vector<ASTPointer<Expression const>> const& _arguments
 )
 {
-	FunctionDefinition const* functionDef = ASTNode::resolveFunctionCall(_functionCall, &m_context.mostDerivedContract());
-
 	solAssert(!_functionType.takesArbitraryParameters());
 
-	vector<string> args;
+	FunctionDefinition const *functionDefinition = ASTNode::resolveFunctionCall(_functionCall, &m_context.mostDerivedContract());
+	Expression const* identifierOrMemberAccess = &_functionCall.expression();
+
+	vector<string> convertedArguments;
 	if (_functionType.bound())
-		args += IRVariable(_functionCall.expression()).part("self").stackSlots();
+		convertedArguments += IRVariable(*identifierOrMemberAccess).part("self").stackSlots();
 
 	TypePointers parameterTypes = _functionType.parameterTypes();
 	for (size_t i = 0; i < _arguments.size(); ++i)
-		args += convert(*_arguments[i], *parameterTypes[i]).stackSlots();
+		convertedArguments += convert(*_arguments[i], *parameterTypes[i]).stackSlots();
 
-	if (functionDef)
+	if (functionDefinition)
 	{
-		solAssert(functionDef->isImplemented());
+		solAssert(functionDefinition->isImplemented());
+		solAssert(&_functionType == functionDefinition->functionType(true /* _internal */));
 
 		define(_functionCall) <<
-			m_context.enqueueFunctionForCodeGeneration(*functionDef) <<
+			m_context.enqueueFunctionForCodeGeneration(*functionDefinition) <<
 			"(" <<
-			joinHumanReadable(args) <<
+			joinHumanReadable(convertedArguments) <<
 			")\n";
 	}
 	else
@@ -2555,8 +2557,8 @@ void IRGeneratorForStatements::appendInternalFunctionCall(
 		define(_functionCall) <<
 			IRNames::internalDispatch(arity) <<
 			"(" <<
-			IRVariable(_functionCall.expression()).part("functionIdentifier").name() <<
-			joinHumanReadablePrefixed(args) <<
+			IRVariable(*identifierOrMemberAccess).part("functionIdentifier").name() <<
+			joinHumanReadablePrefixed(convertedArguments) <<
 			")\n";
 	}
 }
