@@ -8,6 +8,10 @@ function asDecimal(uint mantissa, uint exponent) pure returns (Decimal memory) {
 }
 
 contract C {
+    function zero() public pure returns (Decimal memory) {
+        return 0.0 asDecimal;
+    }
+
     function simple() public pure returns (Decimal memory, Decimal memory, Decimal memory, Decimal memory, Decimal memory) {
         return (
             1234567800.0 asDecimal,
@@ -28,6 +32,7 @@ contract C {
 }
 
 // ----
+// zero() -> 0, 0
 // simple() -> 1234567800, 0, 12345678, 0, 12345678, 4, 12345678, 6, 12345678, 8
 // maxMantissa() -> 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff, 70
 // maxUint8Exponent() -> 1, 256
