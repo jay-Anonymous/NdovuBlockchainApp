@@ -2530,7 +2530,7 @@ void IRGeneratorForStatements::appendInternalFunctionCall(
 
 				IRVariable value(m_context.newYulVariable(), literalType);
 				if (literalType.category() != Type::Category::StringLiteral)
-					// NOTE: For string literals we do not need to define the variable. The varible
+					// NOTE: For string literals we do not need to define the variable. The variable
 					// value will be embedded inside the conversion function.
 					define(value) << toCompactHexWithPrefix(literalType.literalValue(&_literal)) << "\n";
 				convertedArguments += convert(value, *parameterTypes[0]).stackSlots();
