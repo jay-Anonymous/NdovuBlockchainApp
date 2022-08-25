@@ -28,6 +28,6 @@ contract C {
     }
 }
 // ----
-// TypeError 7251: (461-475): Literal suffix functions must return memory value.
-// TypeError 7251: (485-498): Literal suffix functions must return memory value.
-// TypeError 7251: (508-523): Literal suffix functions must return memory value.
+// TypeError 7251: (461-475): Literal suffix functions must return memory values.
+// TypeError 7251: (485-498): Literal suffix functions must return memory values.
+// TypeError 7251: (508-523): Literal suffix functions must return memory values.
