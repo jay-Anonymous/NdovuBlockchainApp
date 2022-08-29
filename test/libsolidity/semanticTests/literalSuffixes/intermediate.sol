@@ -6,10 +6,10 @@ function km(uint meters) pure returns (Length) {
 
 struct Float {
     uint mantissa;
-    int exponent;
+    uint exponent;
 }
 
-function f(uint mantissa, int exponent) pure returns (Float memory) {
+function f(uint mantissa, uint exponent) pure returns (Float memory) {
     return Float(mantissa, exponent);
 }
 
