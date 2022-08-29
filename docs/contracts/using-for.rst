@@ -7,10 +7,10 @@ Using For
 *********
 
 The directive ``using A for B;`` can be used to attach functions (``A``)
-as operators to user-defined type or as member functions to any type (``B``).
+as operators to user-defined types or as member functions to any type (``B``).
 The member functions receive the object they are called on as their first
 parameter (like the ``self`` variable in Python). The operator functions
-receives operands as parameters.
+receive operands as parameters.
 
 It is valid either at file level or inside a contract,
 at contract level.
@@ -26,8 +26,8 @@ The first part, ``A``, can be one of:
   the functions will be attached to the type (``T``) as operators.
 
 At file level, the second part, ``B``, has to be an explicit type (without data location specifier).
-To attach functions as member functions inside contracts, you can also use ``using L for *;``, which
-has the effect that all functions of the library ``L`` are attached to *all* types.
+Inside contracts, you can also use ``using L for *;``, which has the effect that all functions
+of the library ``L`` are attached to *all* types.
 
 If you specify a library, *all* functions in the library are attached,
 even those where the type of the first parameter does not
@@ -40,9 +40,9 @@ then the type (``uint``) has to be implicitly convertible to the
 first parameter of each of these functions. This check is
 performed even if none of these functions are called.
 
-If you define a user type operator (``using {f as +} for T``), then
+If you define an operator for a user-defined type (``using {f as +} for T``), then
 the type (``T``), types of function parameters and a type of function return value
-has to be the same. The type (``T``) does not include data location.
+have to be the same. The type (``T``) does not include data location.
 But, data location of the function parameters and function return value must be
 the same.
 
@@ -159,12 +159,12 @@ if you pass memory or value types, a copy will be performed, even in case of the
 is when storage reference variables are used or when internal library
 functions are called.
 
-Another example shows how to define user type operator:
+Another example shows how to define a custom operator for a user-defined type:
 
 .. code-block:: solidity
 
     // SPDX-License-Identifier: GPL-3.0
-    pragma solidity >=0.8.17 <0.9.0;
+    pragma solidity ^0.8.17;
 
     using {add as +} for Point;
 
@@ -173,15 +173,15 @@ Another example shows how to define user type operator:
         uint y;
     }
 
-    function add(Point memory _a, Point memory _b) pure returns (Point memory result) {
-        result.x = _a.x + _b.x;
-        result.y = _a.y + _b.y;
+    function add(Point memory a, Point memory _b) pure returns (Point memory result) {
+        result.x = a.x + b.x;
+        result.y = a.y + b.y;
     }
 
     contract C {
         function test() pure public {
-            Point memory p1 = Point({x:3, y:4});
-            Point memory p2 = Point({x:7, y:16});
+            Point memory p1 = Point({x: 3, y: 4});
+            Point memory p2 = Point({x: 7, y: 16});
 
             Point memory result = p1 + p2;
             require(result.x == 10);
