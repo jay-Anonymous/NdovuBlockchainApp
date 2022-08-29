@@ -1,3 +1,5 @@
+pragma abicoder v2;
+
 struct Decimal {
     uint mantissa;
     uint exponent;
