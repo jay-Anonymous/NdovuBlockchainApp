@@ -173,7 +173,7 @@ Another example shows how to define a custom operator for a user-defined type:
         uint y;
     }
 
-    function add(Point memory a, Point memory _b) pure returns (Point memory result) {
+    function add(Point memory a, Point memory b) pure returns (Point memory result) {
         result.x = a.x + b.x;
         result.y = a.y + b.y;
     }
