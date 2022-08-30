@@ -6,7 +6,7 @@
 Using For
 *********
 
-The directive ``using A for B;`` can be used to attach functions (``A``)
+The directive ``using A for B;`` can be used to bind functions (``A``)
 as operators to user-defined types or as member functions to any type (``B``).
 The member functions receive the object they are called on as their first
 parameter (like the ``self`` variable in Python). The operator functions
@@ -18,18 +18,18 @@ at contract level.
 The first part, ``A``, can be one of:
 
 - a list of file-level or library functions (``using {f, g, h, L.t} for uint;``) -
-  only those functions will be attached to the type as member functions,
+  only those functions will be bound to the type as member functions,
 - the name of a library (``using L for uint;``) -
-  all functions (both public and internal ones) of the library are attached to the type
+  all functions (both public and internal ones) of the library are bound to the type
   as member functions,
 - a list of assignments of functions to operators (``using {f as +, g as -} for T;``) -
-  the functions will be attached to the type (``T``) as operators.
+  the functions will be bound to the type (``T``) as operators.
 
 At file level, the second part, ``B``, has to be an explicit type (without data location specifier).
 Inside contracts, you can also use ``using L for *;``, which has the effect that all functions
-of the library ``L`` are attached to *all* types.
+of the library ``L`` are bound to *all* types.
 
-If you specify a library, *all* functions in the library are attached,
+If you specify a library, *all* functions in the library are bound,
 even those where the type of the first parameter does not
 match the type of the object. The type is checked at the
 point the function is called and function overload
@@ -54,7 +54,7 @@ outside of the contract or module in which it is used.
 When the directive is used at file level and applied to a
 user-defined type which was defined at file level in the same file,
 the word ``global`` can be added at the end. This will have the
-effect that the functions are attached to the type everywhere
+effect that the functions are bound to the type everywhere
 the type is available (including other files), not only in the
 scope of the using statement.
 
@@ -68,8 +68,8 @@ instead of library functions.
     pragma solidity ^0.8.13;
 
     struct Data { mapping(uint => bool) flags; }
-    // Now we attach functions to the type.
-    // The attached functions can be used throughout the rest of the module.
+    // Now we bind functions to the type.
+    // The bound functions can be used throughout the rest of the module.
     // If you import the module, you have to
     // repeat the using directive there, for example as
     //   import "flags.sol" as Flags;
