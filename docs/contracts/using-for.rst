@@ -166,25 +166,55 @@ Another example shows how to define a custom operator for a user-defined type:
     // SPDX-License-Identifier: GPL-3.0
     pragma solidity ^0.8.17;
 
-    using {add as +} for Point;
+    type UFixed16x2 is uint16;
 
-    struct Point {
-        uint x;
-        uint y;
+    using {
+        add as +,
+        sub as -,
+        mul as *,
+        div as /
+    } for UFixed16x2;
+
+    uint32 constant SCALE = 100;
+
+    function add(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
+        return UFixed16x2.wrap(UFixed16x2.unwrap(a) + UFixed16x2.unwrap(b));
     }
 
-    function add(Point memory a, Point memory b) pure returns (Point memory result) {
-        result.x = a.x + b.x;
-        result.y = a.y + b.y;
+    function sub(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
+        return UFixed16x2.wrap(UFixed16x2.unwrap(a) - UFixed16x2.unwrap(b));
     }
 
-    contract C {
-        function test() pure public {
-            Point memory p1 = Point({x: 3, y: 4});
-            Point memory p2 = Point({x: 7, y: 16});
+    function div(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
+        uint32 a32 = UFixed16x2.unwrap(a);
+        uint32 b32 = UFixed16x2.unwrap(b);
+        return UFixed16x2.wrap(uint16(a32 * SCALE / b32));
+    }
 
-            Point memory result = p1 + p2;
-            require(result.x == 10);
-            require(result.y == 20);
+    function mul(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
+        uint32 a32 = UFixed16x2.unwrap(a);
+        uint32 b32 = UFixed16x2.unwrap(b);
+        return UFixed16x2.wrap(uint16(a32 * b32 / SCALE));
+    }
+
+    contract Math {
+        function sum(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
+            return a + b;
+        }
+
+        function sub(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
+            return a - b;
+        }
+
+        function mul(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
+            return a * b;
+        }
+
+        function div(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
+            return a / b;
+        }
+
+        function avg(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
+            return (a + b) / UFixed16x2.wrap(200);
         }
     }
