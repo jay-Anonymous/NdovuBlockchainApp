@@ -170,51 +170,24 @@ Another example shows how to define a custom operator for a user-defined type:
 
     using {
         add as +,
-        sub as -,
-        mul as *,
         div as /
     } for UFixed16x2;
 
     uint32 constant SCALE = 100;
 
-    function add(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
+    function add(UFixed16x2 a, UFixed16x2 b) pure returns (UFixed16x2) {
         return UFixed16x2.wrap(UFixed16x2.unwrap(a) + UFixed16x2.unwrap(b));
     }
 
-    function sub(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
-        return UFixed16x2.wrap(UFixed16x2.unwrap(a) - UFixed16x2.unwrap(b));
-    }
-
-    function div(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
+    function div(UFixed16x2 a, UFixed16x2 b) pure returns (UFixed16x2) {
         uint32 a32 = UFixed16x2.unwrap(a);
         uint32 b32 = UFixed16x2.unwrap(b);
         return UFixed16x2.wrap(uint16(a32 * SCALE / b32));
     }
 
-    function mul(UFixed16x2 a, UFixed16x2 b) returns (UFixed16x2) {
-        uint32 a32 = UFixed16x2.unwrap(a);
-        uint32 b32 = UFixed16x2.unwrap(b);
-        return UFixed16x2.wrap(uint16(a32 * b32 / SCALE));
-    }
 
     contract Math {
-        function sum(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
-            return a + b;
-        }
-
-        function sub(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
-            return a - b;
-        }
-
-        function mul(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
-            return a * b;
-        }
-
-        function div(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
-            return a / b;
-        }
-
-        function avg(UFixed16x2 a, UFixed16x2 b) public returns (UFixed16x2) {
+        function avg(UFixed16x2 a, UFixed16x2 b) public pure returns (UFixed16x2) {
             return (a + b) / UFixed16x2.wrap(200);
         }
     }
