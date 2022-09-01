@@ -25,6 +25,7 @@ set(sources
 	LEB128.h
 	Numeric.cpp
 	Numeric.h
+        OverridableOperators.h
 	picosha2.h
 	Result.h
 	SetOnce.h

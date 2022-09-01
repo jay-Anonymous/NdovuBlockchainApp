@@ -36,6 +36,7 @@
 #include <libsolutil/StringUtils.h>
 #include <libsolutil/UTF8.h>
 #include <libsolutil/Visitor.h>
+#include <libsolutil/OverridableOperators.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -424,10 +425,14 @@ Result<FunctionDefinition const*> Type::userDefinedOperator(Token _token, ASTNod
 
 	if (matchingDefinitions.size() == 1)
 		return *matchingDefinitions.begin();
-	else if (matchingDefinitions.size() == 0)
-		return Result<FunctionDefinition const*>::err("No matching user-defined operator found.");
-	else
-		return Result<FunctionDefinition const*>::err("Multiple user-defined functions provided for this operator.");
+	else if (util::contains(util::overridableOperators, _token))
+	{
+		if (matchingDefinitions.size() == 0)
+			return Result<FunctionDefinition const*>::err("No matching user-defined operator found.");
+		else
+			return Result<FunctionDefinition const*>::err("Multiple user-defined functions provided for this operator.");
+	}
+	return nullptr;
 }
 
 MemberList::MemberMap Type::boundFunctions(Type const& _type, ASTNode const& _scope)
