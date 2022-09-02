@@ -210,6 +210,33 @@ BOOST_AUTO_TEST_CASE(test_format_number_readable_signed)
 	);
 }
 
+BOOST_AUTO_TEST_CASE(test_encodeURI)
+{
+	BOOST_CHECK_EQUAL(util::encodeURI(""), "");
+	BOOST_CHECK_EQUAL(util::encodeURI(" "), "%20");
+	BOOST_CHECK_EQUAL(util::encodeURI("%"), "%25");
+	BOOST_CHECK_EQUAL(util::encodeURI("Hello World."), "Hello%20World.");
+	BOOST_CHECK_EQUAL(util::encodeURI("\x01\x02\x7F"), "%01%02%7F");
+}
+
+BOOST_AUTO_TEST_CASE(test_decodeURI)
+{
+	BOOST_CHECK_EQUAL(util::decodeURI(""), "");
+	BOOST_CHECK_EQUAL(util::decodeURI(""), "");
+	BOOST_CHECK_EQUAL(util::decodeURI(" ")," ");
+	BOOST_CHECK_EQUAL(util::decodeURI("%25"), "%");
+	BOOST_CHECK_EQUAL(util::decodeURI("Hello%20World."), "Hello World.");
+	BOOST_CHECK_EQUAL(util::decodeURI("Hello World."), "Hello World.");
+	BOOST_CHECK_EQUAL(util::decodeURI("%01%02%7F"), "\x01\x02\x7F");
+
+	// Decoding failure cases (there's not really a standard for that).
+	BOOST_CHECK_EQUAL(util::decodeURI("%"), "");
+	BOOST_CHECK_EQUAL(util::decodeURI("%ZZ"), "ZZ");
+	BOOST_CHECK_EQUAL(util::decodeURI("%7Ge"), "7Ge");
+	BOOST_CHECK_EQUAL(util::decodeURI("%2F%2%2F"), "/2/");
+	BOOST_CHECK_EQUAL(util::decodeURI("%1G/%7G/%FG"), "1G/7G/FG");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 }
