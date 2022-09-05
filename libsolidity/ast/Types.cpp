@@ -1232,14 +1232,22 @@ pair<RationalNumberType const*, RationalNumberType const*> RationalNumberType::m
 
 	rational exponent = 0;
 	rational unsignedMantissa = abs(m_value);
+
+	if (unsignedMantissa > maxMantissa)
+		return {nullptr, TypeProvider::rationalNumber(-exponent)};
+
 	while (unsignedMantissa.denominator() != 1)
 	{
 		unsignedMantissa *= 10;
 		--exponent;
 
-		// FIXME: What happens when exponent in scientific notation is max uint?
-		if (unsignedMantissa > maxMantissa || exponent > maxUint)
+		if (exponent > maxUint && unsignedMantissa > maxMantissa)
 			return {nullptr, nullptr};
+		// FIXME: What happens when exponent in scientific notation is max uint?
+		if (exponent > maxUint)
+			return {TypeProvider::rationalNumber(unsignedMantissa), nullptr};
+		if (unsignedMantissa > maxMantissa)
+			return {nullptr, TypeProvider::rationalNumber(-exponent)};
 	}
 
 	return {

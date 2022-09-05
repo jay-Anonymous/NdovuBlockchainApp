@@ -22,10 +22,10 @@ contract C {
     }
 }
 // ----
-// TypeError 8838: (317-326): The type of the literal cannot be converted to the parameters of the suffix function.
-// TypeError 8838: (336-346): The type of the literal cannot be converted to the parameters of the suffix function.
-// TypeError 8838: (356-367): The type of the literal cannot be converted to the parameters of the suffix function.
-// TypeError 8838: (378-459): The type of the literal cannot be converted to the parameters of the suffix function.
-// TypeError 8838: (481-563): The type of the literal cannot be converted to the parameters of the suffix function.
-// TypeError 8838: (584-667): The type of the literal cannot be converted to the parameters of the suffix function.
+// TypeError 5503: (317-326): This fractional number cannot be decomposed into a mantissa that fits the range of parameters of any possible suffix function.
+// TypeError 5503: (336-346): This fractional number cannot be decomposed into a mantissa that fits the range of parameters of any possible suffix function.
+// TypeError 5503: (356-367): This fractional number cannot be decomposed into a mantissa that fits the range of parameters of any possible suffix function.
+// TypeError 5503: (378-459): This fractional number cannot be decomposed into a mantissa that fits the range of parameters of any possible suffix function.
+// TypeError 5503: (481-563): This fractional number cannot be decomposed into a mantissa that fits the range of parameters of any possible suffix function.
+// TypeError 5503: (584-667): This fractional number cannot be decomposed into a mantissa that fits the range of parameters of any possible suffix function.
 // TypeError 8838: (727-736): The type of the literal cannot be converted to the parameters of the suffix function.

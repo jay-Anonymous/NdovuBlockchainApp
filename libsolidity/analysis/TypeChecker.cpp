@@ -3769,14 +3769,22 @@ bool TypeChecker::visit(Literal const& _literal)
 	if (!subDenomination && literalRationalType)
 	{
 		auto&& [mantissa, exponent] = literalRationalType->mantissaExponent();
-		solAssert((mantissa && exponent) || (!mantissa && !exponent));
-		if (!mantissa)
-			m_errorReporter.typeError(
-				5503_error,
-				_literal.location(),
-				"This fractional number cannot be decomposed into a mantissa and decimal exponent "
-				"that fit the range of parameters of any possible suffix function."
-			);
+
+		if (!mantissa || !exponent)
+		{
+			string mantissaOrExponentErrorMessage = "This fractional number cannot be decomposed into a ";
+
+			if (!mantissa && ! exponent)
+				mantissaOrExponentErrorMessage += "mantissa and exponent that fit ";
+			else if (!exponent)
+				mantissaOrExponentErrorMessage += "exponent that fits ";
+			else if (!mantissa)
+				mantissaOrExponentErrorMessage += "mantissa that fits ";
+
+			mantissaOrExponentErrorMessage += "the range of parameters of any possible suffix function.";
+
+			m_errorReporter.typeError(5503_error, _literal.location(), mantissaOrExponentErrorMessage);
+		}
 	}
 
 	// NOTE: For suffixed literals this is not the final type yet. We will update it in endVisit()
