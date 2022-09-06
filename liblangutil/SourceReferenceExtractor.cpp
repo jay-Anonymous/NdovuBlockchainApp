@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <variant>
 
 using namespace std;
 using namespace solidity;
@@ -30,7 +31,7 @@ using namespace solidity::langutil;
 SourceReferenceExtractor::Message SourceReferenceExtractor::extract(
 	CharStreamProvider const& _charStreamProvider,
 	util::Exception const& _exception,
-	Error::Type _type
+	std::variant<Error::Type, Error::Severity> _typeOrSeverity
 )
 {
 	SourceLocation const* location = boost::get_error_info<errinfo_sourceLocation>(_exception);
@@ -44,17 +45,27 @@ SourceReferenceExtractor::Message SourceReferenceExtractor::extract(
 		for (auto const& info: secondaryLocation->infos)
 			secondary.emplace_back(extract(_charStreamProvider, &info.second, info.first));
 
-	return Message{std::move(primary), _type, std::move(secondary), nullopt};
+	return Message{std::move(primary), _typeOrSeverity, std::move(secondary), nullopt};
 }
 
 SourceReferenceExtractor::Message SourceReferenceExtractor::extract(
 	CharStreamProvider const& _charStreamProvider,
-	Error const& _error
+	Error const& _error,
+	std::variant<Error::Type, Error::Severity> _typeOrSeverity
 )
 {
-	Message message = extract(_charStreamProvider, _error, _error.type());
-	message.errorId = _error.errorId();
-	return message;
+	SourceLocation const* location = boost::get_error_info<errinfo_sourceLocation>(_error);
+
+	string const* message = boost::get_error_info<util::errinfo_comment>(_error);
+	SourceReference primary = extract(_charStreamProvider, location, message ? *message : "");
+
+	std::vector<SourceReference> secondary;
+	auto secondaryLocation = boost::get_error_info<errinfo_secondarySourceLocation>(_error);
+	if (secondaryLocation && !secondaryLocation->infos.empty())
+		for (auto const& info: secondaryLocation->infos)
+			secondary.emplace_back(extract(_charStreamProvider, &info.second, info.first));
+
+	return Message{std::move(primary), _typeOrSeverity, std::move(secondary), _error.errorId()};
 }
 
 SourceReference SourceReferenceExtractor::extract(
