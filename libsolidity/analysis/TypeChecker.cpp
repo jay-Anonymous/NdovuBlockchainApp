@@ -46,6 +46,8 @@
 #include <range/v3/view/zip.hpp>
 #include <range/v3/algorithm/any_of.hpp>
 
+#include <fmt/format.h>
+
 #include <memory>
 #include <vector>
 
@@ -3772,18 +3774,24 @@ bool TypeChecker::visit(Literal const& _literal)
 
 		if (!mantissa || !exponent)
 		{
-			string mantissaOrExponentErrorMessage = "This fractional number cannot be decomposed into a ";
+			string mantissaOrExponentErrorMessage;
 
 			if (!mantissa && ! exponent)
-				mantissaOrExponentErrorMessage += "mantissa and exponent that fit ";
+				mantissaOrExponentErrorMessage = "mantissa and exponent that fit";
 			else if (!exponent)
-				mantissaOrExponentErrorMessage += "exponent that fits ";
-			else if (!mantissa)
-				mantissaOrExponentErrorMessage += "mantissa that fits ";
+				mantissaOrExponentErrorMessage = "exponent that fits";
+			else
+				mantissaOrExponentErrorMessage = "mantissa that fits";
 
-			mantissaOrExponentErrorMessage += "the range of parameters of any possible suffix function.";
-
-			m_errorReporter.typeError(5503_error, _literal.location(), mantissaOrExponentErrorMessage);
+			m_errorReporter.typeError(
+				5503_error,
+				_literal.location(),
+				fmt::format(
+					"This fractional number cannot be decomposed into a {} "
+					"the range of parameters of any possible suffix function.",
+					mantissaOrExponentErrorMessage
+				)
+			);
 		}
 	}
 
