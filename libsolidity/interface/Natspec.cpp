@@ -82,11 +82,7 @@ Json::Value Natspec::userDocumentation(ContractDefinition const& _contractDef)
 	{
 		string value = extractDoc(event->annotation().docTags, "notice");
 		if (!value.empty())
-		{
-			Json::Value eventDoc{Json::objectValue};
-			eventDoc["notice"] = value;
-			doc["events"][event->functionType(true)->externalSignature()].append(move(eventDoc));
-		}
+			doc["events"][event->functionType(true)->externalSignature()]["notice"] = value;
 	}
 
 	for (auto const& error: _contractDef.interfaceErrors())
@@ -172,9 +168,9 @@ Json::Value Natspec::devDocumentation(ContractDefinition const& _contractDef)
 			));
 	}
 
-	for (auto const& event: _contractDef.interfaceEvents())
+	for (auto const& event: _contractDef.events())
 		if (auto devDoc = devDocumentation(event->annotation().docTags); !devDoc.empty())
-			doc["events"][event->functionType(true)->externalSignature()].append(devDoc);
+			doc["events"][event->functionType(true)->externalSignature()] = devDoc;
 
 	for (auto const& error: _contractDef.interfaceErrors())
 		if (auto devDoc = devDocumentation(error->annotation().docTags); !devDoc.empty())
