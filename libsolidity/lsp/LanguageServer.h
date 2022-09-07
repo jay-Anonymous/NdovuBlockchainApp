@@ -22,7 +22,7 @@
 #include <libsolidity/interface/CompilerStack.h>
 #include <libsolidity/interface/FileReader.h>
 
-#include <json/json.hpp>
+#include <libsolutil/JSON.h>
 
 #include <functional>
 #include <map>

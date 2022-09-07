@@ -17,7 +17,7 @@
 // SPDX-License-Identifier: GPL-3.0
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/ast/ASTVisitor.h>
-#include <json/json.hpp>
+#include <libsolutil/JSON.h>
 
 #include <fmt/format.h>
 
