@@ -2,7 +2,6 @@
 
 Important Bugfixes:
  * ABI: Include events in the ABI that are emitted by a contract but defined outside of it.
- * NatSpec-JSON: Event signatures map to an array of event objects instead of a single event object.
 
 AST Changes:
  * Add field ``emittedEvents`` to ``ContractDefinition`` which contains the AST IDs of all inherited and emitted events.
