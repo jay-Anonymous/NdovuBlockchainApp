@@ -1,4 +1,4 @@
-.. index:: optimizer, optimiser, common subexpression elimination, constant propagation
+.. index:: optimizer, optimiser, common subexpression elimination, constant propagation, unused store eliminator
 .. _optimizer:
 
 *************
@@ -322,6 +322,7 @@ Abbreviation Full name
 ``a``        :ref:`SSA-transform`
 ``t``        :ref:`structural-simplifier`
 ``p``        :ref:`unused-function-parameter-pruner`
+``S``        :ref:`unused-store-eliminator`
 ``u``        :ref:`unused-pruner`
 ``d``        :ref:`var-decl-initializer`
 ============ ===============================
@@ -958,7 +959,7 @@ DeadCodeEliminator
 This optimization stage removes unreachable code.
 
 Unreachable code is any code within a block which is preceded by a
-leave, return, invalid, break, continue, selfdestruct or revert.
+leave, return, invalid, break, continue, selfdestruct, revert or by a call to a user-defined function that recurses infinitely.
 
 Function definitions are retained as they might be called by earlier
 code and thus are considered reachable.
@@ -1120,6 +1121,51 @@ Prerequisites: Disambiguator, FunctionHoister, LiteralRematerialiser.
 The step LiteralRematerialiser is not required for correctness. It helps deal with cases such as:
 ``function f(x) -> y { revert(y, y} }`` where the literal ``y`` will be replaced by its value ``0``,
 allowing us to rewrite the function.
+
+.. _unused-store-eliminator:
+
+UnusedStoreEliminator
+^^^^^^^^^^^^^^^^^^^^^
+
+Optimizer component that removes redundant ``sstore`` and memory store statements.
+In case of an ``sstore``, if all outgoing code paths revert (due to an explicit ``revert()``, ``invalid()``, or infinite recursion) or
+lead to another ``sstore`` for which the optimizer can tell that it will overwrite the first store, the statement will be removed.
+However, if a there is read operation between the initial ``sstore`` and the revert, or the overwriting ``sstore``, the statement
+will not be removed.
+Such a read operation includes external calls, user-defined functions with any storage access, and ``sload`` of a slot that can't be
+proven to differ from the slot written by the initial ``sstore``.
+
+For example, the following code
+
+.. code-block:: yul
+
+    {
+        let c := calldataload(0)
+        sstore(c, 1)
+        if c {
+            sstore(c, 2)
+        }
+        sstore(c, 3)
+    }
+
+will be transformed into the code below after the Unused Store Eliminator step is run
+
+.. code-block:: yul
+
+    {
+        let c := calldataload(0)
+        if c { }
+        sstore(c, 3)
+    }
+
+For memory store operations, things are generally simpler, at least in the outermost yul block as all such
+statements will be removed if they are never read from in any code path.
+At function analysis level however, the approach is similar to ``sstore``, as we don't know whether the memory location will
+be read once we leave the function's scope, so the statement will be removed only if all code code paths lead to a memory overwrite.
+
+Best run in SSA form.
+
+Prerequisites: Disambiguator, ForLoopInitRewriter.
 
 .. _equivalent-function-combiner:
 
