@@ -1,10 +1,11 @@
 ### 0.8.18 (unreleased)
 
 Language Features:
+ * Add support for ``prevrandao()`` which was introduced in EVM version to "Paris", supplanting ``difficulty`` in the process. Both can be used interchangeably.
 
 
 Compiler Features:
-* Yul Optimizer: Allow replacing the previously hard-coded cleanup sequence by specifying custom steps after a colon delimiter (``:``) in the sequence string.
+ * Yul Optimizer: Allow replacing the previously hard-coded cleanup sequence by specifying custom steps after a colon delimiter (``:``) in the sequence string.
 
 
 Bugfixes:

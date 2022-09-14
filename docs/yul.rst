@@ -756,7 +756,7 @@ Please refer to a different document if you are interested in the precise semant
 
 Opcodes marked with ``-`` do not return a result and all others return exactly one value.
 Opcodes marked with ``F``, ``H``, ``B``, ``C``, ``I`` and ``L`` are present since Frontier, Homestead,
-Byzantium, Constantinople, Istanbul or London respectively.
+Byzantium, Constantinople, Istanbul, London or Paris respectively.
 
 In the following, ``mem[a...b)`` signifies the bytes of memory starting at position ``a`` up to
 but not including position ``b`` and ``storage[p]`` signifies the storage contents at slot ``p``.
@@ -934,6 +934,8 @@ the ``dup`` and ``swap`` instructions as well as ``jump`` instructions, labels a
 | number()                |     | F | current block number                                            |
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | difficulty()            |     | F | difficulty of the current block                                 |
++-------------------------+-----+---+-----------------------------------------------------------------+
+| prevrandao()            |     | P | randomness provided by the beacon chain                         |
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | gaslimit()              |     | F | block gas limit of the current block                            |
 +-------------------------+-----+---+-----------------------------------------------------------------+
