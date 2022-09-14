@@ -164,7 +164,7 @@ Another example shows how to define a custom operator for a user-defined type:
 .. code-block:: solidity
 
     // SPDX-License-Identifier: GPL-3.0
-    pragma solidity ^0.8.17;
+    pragma solidity ^0.8.18;
 
     type UFixed16x2 is uint16;
 
