@@ -30,4 +30,3 @@ jobs:
           exempt-all-milestones: true
           remove-stale-when-updated: true
           operations-per-run: 60
-          start-date: "2022-09-14"
