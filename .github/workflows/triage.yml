@@ -1,0 +1,20 @@
+name: Triage new issues
+
+on:
+  issues:
+    types: [opened, reopened]
+
+env:
+  PROJECT: Solidity
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    if: join(github.event.issue.labels) == ''
+    steps:
+      - name: Move issues to triage
+        uses: alex-page/github-project-automation-plus@v0.8.1
+        with:
+          project: ${{ env.PROJECT }}
+          column: Triage
+          repo-token: ${{ secrets.PROJECT_BOARD_AUTOMATION }}
