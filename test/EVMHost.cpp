@@ -208,6 +208,8 @@ void EVMHost::recordCalls(evmc_message const& _message) noexcept
 		recorded_calls.emplace_back(_message);
 }
 
+// NOTE: this is used for both internal and external calls.
+// External calls are triggered from ExecutionFramework and contain only EVMC_CREATE or EVMC_CALL.
 evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 {
 	recordCalls(_message);
