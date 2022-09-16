@@ -37,8 +37,6 @@ using namespace solidity::util;
 using namespace solidity::test;
 using namespace evmc::literals;
 
-using StorageMap = std::map<evmc::bytes32, evmc::StorageValue>;
-
 evmc::VM& EVMHost::getVM(string const& _path)
 {
 	static evmc::VM NullVM{nullptr};

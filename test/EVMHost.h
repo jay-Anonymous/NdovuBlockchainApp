@@ -35,6 +35,7 @@
 namespace solidity::test
 {
 using Address = util::h160;
+using StorageMap = std::map<evmc::bytes32, evmc::StorageValue>;
 
 class EVMHost: public evmc::MockedHost
 {
@@ -67,7 +68,7 @@ public:
 	}
 
 	/// @returns contents of storage at @param _addr.
-	std::unordered_map<evmc::bytes32, evmc::StorageValue> const& get_address_storage(evmc::address const& _addr);
+	StorageMap const& get_address_storage(evmc::address const& _addr);
 
 	bool account_exists(evmc::address const& _addr) const noexcept final
 	{
