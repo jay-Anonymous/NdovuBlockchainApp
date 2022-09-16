@@ -175,13 +175,16 @@ void ExecutionFramework::sendMessage(bytes const& _data, bool _isCreation, u256 
 	if (_isCreation)
 	{
 		message.kind = EVMC_CREATE;
-		message.recipient = EVMHost::convertToEVMC(h160{});
+		message.recipient = {};
+		message.code_address = {};
 	}
 	else
 	{
 		message.kind = EVMC_CALL;
 		message.recipient = EVMHost::convertToEVMC(m_contractAddress);
+		message.code_address = message.recipient;
 	}
+
 	message.gas = InitialGas.convert_to<int64_t>();
 
 	evmc::Result result = m_evmcHost->call(message);

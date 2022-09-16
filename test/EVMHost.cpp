@@ -260,6 +260,7 @@ evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 			asBytes(to_string(sender.nonce++))
 		));
 		message.recipient = convertToEVMC(createAddress);
+//		message.code_address = {};
 		code = evmc::bytes(message.input_data, message.input_data + message.input_size);
 	}
 	else if (message.kind == EVMC_CREATE2)
@@ -271,6 +272,7 @@ evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 			keccak256(bytes(message.input_data, message.input_data + message.input_size)).asBytes()
 		));
 		message.recipient = convertToEVMC(createAddress);
+//		message.code_address = {};
 		if (accounts.count(message.recipient) && (
 			accounts[message.recipient].nonce > 0 ||
 			!accounts[message.recipient].code.empty()
@@ -286,11 +288,12 @@ evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 	}
 	else if (message.kind == EVMC_DELEGATECALL || message.kind == EVMC_CALLCODE)
 	{
-		code = accounts[message.recipient].code;
-		message.recipient = m_currentAddress;
+		code = accounts[message.code_address].code;
 	}
 	else
+	{
 		code = accounts[message.recipient].code;
+	}
 
 	auto& destination = accounts[message.recipient];
 
