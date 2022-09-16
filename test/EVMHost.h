@@ -67,16 +67,16 @@ public:
 	}
 
 	/// @returns contents of storage at @param _addr.
-	std::map<evmc::bytes32, evmc::storage_value> const& get_address_storage(evmc::address const& _addr);
+	std::unordered_map<evmc::bytes32, evmc::StorageValue> const& get_address_storage(evmc::address const& _addr);
 
 	bool account_exists(evmc::address const& _addr) const noexcept final
 	{
 		return evmc::MockedHost::account_exists(_addr);
 	}
 
-	void selfdestruct(evmc::address const& _addr, evmc::address const& _beneficiary) noexcept final;
+	bool selfdestruct(evmc::address const& _addr, evmc::address const& _beneficiary) noexcept final;
 
-	evmc::result call(evmc_message const& _message) noexcept final;
+	evmc::Result call(evmc_message const& _message) noexcept final;
 
 	evmc::bytes32 get_block_hash(int64_t number) const noexcept final;
 
@@ -99,18 +99,18 @@ private:
 	/// Records calls made via @param _message.
 	void recordCalls(evmc_message const& _message) noexcept;
 
-	static evmc::result precompileECRecover(evmc_message const& _message) noexcept;
-	static evmc::result precompileSha256(evmc_message const& _message) noexcept;
-	static evmc::result precompileRipeMD160(evmc_message const& _message) noexcept;
-	static evmc::result precompileIdentity(evmc_message const& _message) noexcept;
-	static evmc::result precompileModExp(evmc_message const& _message) noexcept;
-	static evmc::result precompileALTBN128G1Add(evmc_message const& _message) noexcept;
-	static evmc::result precompileALTBN128G1Mul(evmc_message const& _message) noexcept;
-	static evmc::result precompileALTBN128PairingProduct(evmc_message const& _message) noexcept;
-	static evmc::result precompileGeneric(evmc_message const& _message, std::map<bytes, bytes> const& _inOut) noexcept;
+	static evmc::Result precompileECRecover(evmc_message const& _message) noexcept;
+	static evmc::Result precompileSha256(evmc_message const& _message) noexcept;
+	static evmc::Result precompileRipeMD160(evmc_message const& _message) noexcept;
+	static evmc::Result precompileIdentity(evmc_message const& _message) noexcept;
+	static evmc::Result precompileModExp(evmc_message const& _message) noexcept;
+	static evmc::Result precompileALTBN128G1Add(evmc_message const& _message) noexcept;
+	static evmc::Result precompileALTBN128G1Mul(evmc_message const& _message) noexcept;
+	static evmc::Result precompileALTBN128PairingProduct(evmc_message const& _message) noexcept;
+	static evmc::Result precompileGeneric(evmc_message const& _message, std::map<bytes, bytes> const& _inOut) noexcept;
 	/// @returns a result object with no gas usage and result data taken from @a _data.
 	/// @note The return value is only valid as long as @a _data is alive!
-	static evmc::result resultWithGas(evmc_message const& _message, bytes const& _data) noexcept;
+	static evmc::Result resultWithGas(evmc_message const& _message, bytes const& _data) noexcept;
 
 	evmc::VM& m_vm;
 	// EVM version requested by the testing tool
