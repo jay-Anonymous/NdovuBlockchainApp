@@ -12,6 +12,6 @@ contract C {
 // ====
 // compileToEwasm: also
 // ----
-// f() -> 0x0fdd67305928fcac8d213d1e47bfa6165cd0b87b
+// f() -> 0xbe9efd422ee479f010753a6bc06afe3a8444fc00
 // g() -> true
 // h(function): left(0x1122334400112233445566778899AABBCCDDEEFF42424242) -> 0x1122334400112233445566778899AABBCCDDEEFF

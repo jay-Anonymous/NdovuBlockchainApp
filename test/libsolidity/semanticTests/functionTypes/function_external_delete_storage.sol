@@ -25,7 +25,7 @@ contract C {
 // increment() ->
 // y() -> 1
 // set() ->
-// x() -> 0xfdd67305928fcac8d213d1e47bfa6165cd0b87bd09de08a0000000000000000
+// x() -> 0xbe9efd422ee479f010753a6bc06afe3a8444fc00d09de08a0000000000000000
 // increment() ->
 // y() -> 2
 // incrementIndirectly() ->
