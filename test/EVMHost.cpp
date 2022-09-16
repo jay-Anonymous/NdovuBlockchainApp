@@ -249,13 +249,33 @@ evmc::result EVMHost::call(evmc_message const& _message) noexcept
 
 	if (message.kind == EVMC_CREATE)
 	{
-		// TODO this is not the right formula
 		// TODO is the nonce incremented on failure, too?
+		sender.nonce++;
+
+		auto encodeRlpInteger = [](int value) -> bytes {
+			if (value == 0) {
+				return bytes(1, 128);
+			} else if (value <= 127) {
+				return bytes(1, static_cast<uint8_t>(value));
+			} else if (value <= 0xff) {
+				return bytes(1, 128 + 1) + bytes(1, static_cast<uint8_t>(value));
+			} else if (value <= 0xffff) {
+				return bytes(1, 128 + 55 + 2) + bytes(1, static_cast<uint8_t>(value >> 8)) + bytes(1, static_cast<uint8_t>(value));
+			} else {
+				assertThrow(false, Exception, "Can only encode RLP numbers <= 0xffff");
+			}
+		};
+
 		h160 createAddress(keccak256(
+			bytes(1, 0xd6) +
+			bytes(1, 0x94) +
 			bytes(begin(message.sender.bytes), end(message.sender.bytes)) +
-			asBytes(to_string(sender.nonce++))
+			encodeRlpInteger(sender.nonce)
 		));
+
 		message.destination = convertToEVMC(createAddress);
+		assertThrow(accounts.count(message.destination) == 0, Exception, "Account cannot exist");
+
 		code = evmc::bytes(message.input_data, message.input_data + message.input_size);
 	}
 	else if (message.kind == EVMC_CREATE2)
@@ -266,6 +286,7 @@ evmc::result EVMHost::call(evmc_message const& _message) noexcept
 			bytes(begin(message.create2_salt.bytes), end(message.create2_salt.bytes)) +
 			keccak256(bytes(message.input_data, message.input_data + message.input_size)).asBytes()
 		));
+
 		message.destination = convertToEVMC(createAddress);
 		if (accounts.count(message.destination) && (
 			accounts[message.destination].nonce > 0 ||
