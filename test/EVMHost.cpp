@@ -148,7 +148,6 @@ EVMHost::EVMHost(langutil::EVMVersion _evmVersion, evmc::VM& _vm):
 void EVMHost::reset()
 {
 	accounts.clear();
-	m_currentAddress = {};
 	// Clear self destruct records
 	recorded_selfdestructs.clear();
 	// Clear call records
@@ -260,7 +259,6 @@ evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 			asBytes(to_string(sender.nonce++))
 		));
 		message.recipient = convertToEVMC(createAddress);
-//		message.code_address = {};
 		code = evmc::bytes(message.input_data, message.input_data + message.input_size);
 	}
 	else if (message.kind == EVMC_CREATE2)
@@ -272,7 +270,6 @@ evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 			keccak256(bytes(message.input_data, message.input_data + message.input_size)).asBytes()
 		));
 		message.recipient = convertToEVMC(createAddress);
-//		message.code_address = {};
 		if (accounts.count(message.recipient) && (
 			accounts[message.recipient].nonce > 0 ||
 			!accounts[message.recipient].code.empty()
@@ -317,10 +314,7 @@ evmc::Result EVMHost::call(evmc_message const& _message) noexcept
 		access_account(message.sender);
 		access_account(message.recipient);
 	}
-	evmc::address currentAddress = m_currentAddress;
-	m_currentAddress = message.recipient;
 	evmc::Result result = m_vm.execute(*this, m_evmRevision, message, code.data(), code.size());
-	m_currentAddress = currentAddress;
 
 	if (message.kind == EVMC_CREATE || message.kind == EVMC_CREATE2)
 	{
