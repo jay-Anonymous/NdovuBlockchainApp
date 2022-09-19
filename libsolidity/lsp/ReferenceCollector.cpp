@@ -92,7 +92,7 @@ vector<Reference> ReferenceCollector::collect(
 	else if (auto const* declaration = dynamic_cast<Declaration const*>(_sourceNode))
 		references += collect(declaration, _sourceOffset, _sourceUnit, declaration->name());
 	else
-		lspAssert(false, ErrorCode::InternalError, "Unhandled AST node "s + typeid(*_sourceNode).name());
+		lspRequire(false, ErrorCode::InternalError, "Unhandled AST node "s + typeid(*_sourceNode).name());
 
 	return references;
 }
