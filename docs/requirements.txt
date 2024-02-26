@@ -1,3 +1,4 @@
 sphinx_rtd_theme>=0.3.1
 pygments-lexer-solidity>=0.5.1
 sphinx-a4doc>=1.2.1
+pillow>=10.2.0 # not directly required, pinned by Snyk to avoid a vulnerability
